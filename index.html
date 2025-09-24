@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlightClub – Darts Counter</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root { --bg:#111; --fg:#fff; --muted:#9aa0a6; --card:#1b1b1b; --accent:#3ddc84; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:system-ui, Arial, sans-serif; background:var(--bg); color:var(--fg); }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 2rem 1rem; }
+    h1 { text-align:center; margin:0 0 1.25rem; }
+    .card { background:var(--card); border:1px solid #2a2a2a; border-radius:14px; padding:1rem; }
+    form { display:grid; gap:1rem; }
+    .row { display:grid; gap:.5rem; }
+    label { font-weight:600; }
+    select, input[type="number"], input[type="text"] {
+      width:100%; padding:.7rem .8rem; border-radius:10px; border:1px solid #2a2a2a; background:#0f0f0f; color:var(--fg);
+    }
+    .grid { display:grid; gap:.75rem; }
+    .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    fieldset { border:none; padding:0; margin:0; }
+    .choices { display:flex; gap:.5rem; flex-wrap:wrap; } /* nebeneinander */
+    .chip {
+      display:inline-flex; align-items:center; gap:.4rem;
+      border:1px solid #2a2a2a; padding:.55rem .8rem; border-radius:10px; background:#121212; cursor:pointer;
+    }
+    .chip input { accent-color: var(--accent); }
+    .names { display:grid; gap:.5rem; }
+    .name-field { display:block; }
+    .bar { display:flex; justify-content:space-between; align-items:center; gap:1rem; }
+    .hint { color:var(--muted); font-size:.9rem; }
+    .ok { color:#9cffc8; }
+    .err { color:#ff8686; }
+    .checkline { display:flex; align-items:center; gap:.6rem; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>FlightClub – Setup</h1>
+
+    <div class="card">
+      <form id="setupForm" autocomplete="off">
+        <!-- Anzahl Spieler -->
+        <div class="row">
+          <label for="playerCount">Number of players</label>
+          <select id="playerCount" name="playerCount">
+            <option value="1">1 Spieler</option>
+            <option value="2" selected>2 Spieler</option>
+            <option value="3">3 Spieler</option>
+            <option value="4">4 Spieler</option>
+          </select>
+          
+        <!-- Namen -->
+        <div class="row">
+          <label>Player names</label>
+          <div class="names" id="nameFields">
+            <div class="name-field" id="wrap-p1"><input type="text" id="p1" name="p1" placeholder="Player 1" value="Player 1" /></div>
+            <div class="name-field" id="wrap-p2"><input type="text" id="p2" name="p2" placeholder="Player 2" value="Player 2" /></div>
+            <div class="name-field" id="wrap-p3"><input type="text" id="p3" name="p3" placeholder="Player 3" value="Player 3" /></div>
+            <div class="name-field" id="wrap-p4"><input type="text" id="p4" name="p4" placeholder="Player 4" value="Player 4" /></div>
+          </div>
+        </div>
+
+       <!-- Target Score -->
+<fieldset class="row">
+  <legend style="text-align:center;">Target Score</legend>
+  <div role="radiogroup" aria-label="Target Score">
+    <label class="chip"><input type="radio" name="target" value="301"> <span>301</span></label>
+    <label class="chip"><input type="radio" name="target" value="501" checked> <span>501</span></label>
+    <label class="chip"><input type="radio" name="target" value="701"> <span>701</span></label>
+  </div>
+</fieldset>
+
+<!-- Sets & Legs -->
+<div class="grid cols-2">
+  <div class="row">
+    <label for="sets">Sets</label>
+    <select id="sets" name="sets"></select>
+  </div>
+  <div class="row">
+    <label for="legs">Legs</label>
+    <select id="legs" name="legs"></select>
+  </div>
+</div>
+
+<!-- Trink-Regeln -->
+<fieldset class="row">
+  <legend style="text-align:center;">Extras</legend>
+  <div class="choices center">
+    <label class="chip">
+      <input type="checkbox" id="drinkRules" name="drinkRules">
+      <span>Drinking rules</span>
+    </label>
+  </div>
+</fieldset>
+
+
+        <div class="bar">
+          <div id="status" class="hint"></div>
+          <button type="submit">Spiel starten</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Helpers
+    function fillSelect(sel, from, to) {
+      sel.innerHTML = "";
+      for (let i = from; i <= to; i++) {
+        const opt = document.createElement("option");
+        opt.value = String(i);
+        opt.textContent = String(i);
+        sel.appendChild(opt);
+      }
+    }
+    function showNameInputs(count) {
+      for (let i = 1; i <= 4; i++) {
+        const wrap = document.getElementById("wrap-p" + i);
+        wrap.style.display = i <= count ? "block" : "none";
+      }
+    }
+
+    // Init
+    const playerCountEl = document.getElementById("playerCount");
+    const setsEl = document.getElementById("sets");
+    const legsEl = document.getElementById("legs");
+    const statusEl = document.getElementById("status");
+    const drinkRulesEl = document.getElementById("drinkRules");
+
+    fillSelect(setsEl, 1, 5);
+    fillSelect(legsEl, 1, 11);
+    showNameInputs(parseInt(playerCountEl.value, 10));
+
+    playerCountEl.addEventListener("change", () => {
+      showNameInputs(parseInt(playerCountEl.value, 10));
+    });
+
+    // Submit
+    document.getElementById("setupForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const playerCount = parseInt(playerCountEl.value, 10);
+      const names = [];
+      for (let i = 1; i <= playerCount; i++) {
+        const v = (document.getElementById("p" + i).value || "").trim();
+        names.push(v || "Player " + i);
+      }
+
+      const target = document.querySelector('input[name="target"]:checked').value;
+      const sets = parseInt(setsEl.value, 10);
+      const legs = parseInt(legsEl.value, 10);
+      const drinkRules = !!drinkRulesEl.checked;
+
+      const setup = {
+        players: names.map((n, idx) => ({ id: String(idx + 1), name: n })),
+        mode: {
+          startScore: parseInt(target, 10),
+          outRule: "double",
+          setsToWin: sets,
+          legsToWin: legs
+        },
+        options: {
+          drinkRules
+        },
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        localStorage.setItem("dartSetup", JSON.stringify(setup));
+        statusEl.className = "hint ok";
+        statusEl.textContent = "Gespeichert. Bereit zum Start!";
+        // Später: window.location.href = "game.html";
+        console.log("Setup saved →", setup);
+      } catch (err) {
+        statusEl.className = "hint err";
+        statusEl.textContent = "Konnte Setup nicht speichern.";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

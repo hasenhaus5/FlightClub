@@ -1,0 +1,100 @@
+body{font-family:system-ui;background:#111;color:#fff;text-align:center;margin:0;padding:2rem}
+.player{border:1px solid #444;border-radius:12px;padding:1rem;margin:1rem auto;max-width:260px}
+button{padding:.6rem 1rem;border:0;border-radius:8px;cursor:pointer}
+:root{
+    --bg:#0d0f12;           /* Hintergrund */
+    --card:#14171a;         /* Karten */
+    --surface:#0f1113;      /* Inputs/Chips */
+    --fg:#e9eef3;           /* Text */
+    --muted:#9aa0a6;        /* Sekundärtext */
+    --accent:#49e28c;       /* Akzent (grün) */
+    --accent-weak:#2bb971;  /* Hover/aktive Abstufung */
+    --ring:#72ffa9;         /* Fokus-Ring */
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  
+  * { box-sizing:border-box }
+  html,body { height:100% }
+  body{
+    margin:0;
+    font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+    background: radial-gradient(1200px 600px at 10% -10%, rgba(73,226,140,.08), transparent 60%),
+                radial-gradient(800px 500px at 110% 10%, rgba(73,226,140,.06), transparent 60%),
+                var(--bg);
+    color:var(--fg);
+  }
+  
+  .wrap{ max-width:720px; margin:0 auto; padding:2rem 1rem }
+  h1{
+    text-align:center; margin:0 0 1.5rem;
+    letter-spacing:.5px; font-weight:800; font-size:clamp(1.6rem,3vw,2.2rem);
+  }
+  .card{
+    background:var(--card); border:1px solid #21262d; border-radius:16px; padding:1.25rem;
+    box-shadow: var(--shadow);
+  }
+  
+  form{ display:grid; gap:1.1rem }
+  .row{ display:grid; gap:.6rem }
+  label{ font-weight:650 }
+  
+  select, input[type="number"], input[type="text"]{
+    width:100%; padding:.8rem .9rem; border-radius:12px;
+    border:1px solid #20252b; background:var(--surface); color:var(--fg);
+    transition: border-color .15s ease, box-shadow .15s ease, transform .02s ease-in;
+  }
+  select:focus, input:focus{
+    outline:0; border-color:var(--accent);
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--ring) 35%, transparent);
+  }
+  
+  /* Chips */
+  .choices{ display:flex; gap:.6rem; flex-wrap:wrap }
+  .choices.center{ justify-content:center }        /* <-- für mittige Anordnung */
+  .chip{
+    display:inline-flex; align-items:center; gap:.5rem; cursor:pointer;
+    padding:.6rem 1rem; border-radius:12px; user-select:none;
+    background:var(--surface); border:1px solid #20252b; min-width:70px; justify-content:center;
+    transition: background .15s ease, border-color .15s ease, transform .02s ease-in, box-shadow .15s ease;
+  }
+  .chip:hover{ border-color:#2b3138; transform:translateY(-1px) }
+  .chip input{ appearance:auto; accent-color:var(--accent) }
+  
+  /* Aktiver/Checked-Zustand (modernes :has) */
+  .chip:has(input:checked){
+    background:linear-gradient(0deg, rgba(73,226,140,.12), rgba(73,226,140,.12)) , var(--surface);
+    border-color: var(--accent-weak);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+  
+  /* Checkbox-Chip (Trink-Regeln) passt sich an */
+  .chip input[type="checkbox"]{ width:1rem; height:1rem }
+  
+  /* Buttons */
+  button{
+    appearance:none; border:0; border-radius:12px;
+    padding:.95rem 1.1rem; font-weight:750; cursor:pointer;
+    background: linear-gradient(180deg, var(--accent), var(--accent-weak));
+    color:#0b0f0c; letter-spacing:.2px;
+    box-shadow: 0 6px 20px rgba(73,226,140,.25);
+    transition: transform .05s ease-in, filter .15s ease, box-shadow .2s ease;
+  }
+  button:hover{ filter:brightness(1.04); box-shadow:0 8px 26px rgba(73,226,140,.32) }
+  button:active{ transform:translateY(1px) }
+  
+  /* Sekundärtexte/Hinweise */
+  .hint{ color:var(--muted); font-size:.93rem; text-align:center }
+  .ok{ color:#9cffc8 }
+  .err{ color:#ff8686 }
+  
+  /* Kleine Layout-Polish */
+  .grid{ display:grid; gap:.9rem }
+  .grid.cols-2{ grid-template-columns: repeat(2, 1fr) }
+  .name-field input{ font-weight:550 }
+  legend{ text-align:center; color:var(--muted); font-weight:700 }
+  
+  /* Mobile Feinschliff */
+  @media (max-width:480px){
+    .chip{ flex:1 1 calc(33% - .6rem) } /* 3 pro Reihe wenn Platz knapp */
+  }
+  
